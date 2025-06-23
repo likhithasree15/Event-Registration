@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Event Registration</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      /* Gradient background */
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff; /* default text color for body */
+    }
+
+    /* Container */
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      width: 350px;
+      text-align: center;
+      color: #333; /* dark text inside container */
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    form label {
+      display: block;
+      text-align: left;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 4px;
+      border: 1.5px solid #ccc;
+      border-radius: 4px;
+      font-size: 15px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    select:focus {
+      border-color: #4A90E2;
+      outline: none;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background-color: #4A90E2;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #357ABD;
+    }
+
+    #responseMessage {
+      margin-top: 15px;
+      font-weight: 600;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Event Registration Form</h2>
+    <form id="registrationForm">
+      <label>
+        Name:<br />
+        <input type="text" name="name" required />
+      </label>
+      <label>
+        Email:<br />
+        <input type="email" name="email" required />
+      </label>
+      <label>
+        Phone Number:<br />
+        <input type="tel" name="phone" pattern="[0-9]{10}" required />
+      </label>
+      <label>
+        Event:<br />
+        <select name="event" required>
+          <option value="">--Select Event--</option>
+          <option value="Tech Talk">Tech Talk</option>
+          <option value="Workshop">Workshop</option>
+          <option value="Networking">Networking</option>
+        </select>
+      </label>
+      <button type="submit">Register</button>
+    </form>
+
+    <p id="responseMessage"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('registrationForm');
+    const responseMessage = document.getElementById('responseMessage');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch('http://localhost:3000/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          responseMessage.style.color = '#4CAF50'; // green
+          responseMessage.textContent = 'Registration successful!';
+          form.reset();
+        } else {
+          responseMessage.style.color = '#E74C3C'; // red
+          responseMessage.textContent = `Error: ${result.error}`;
+        }
+      } catch (err) {
+        responseMessage.style.color = '#E74C3C'; // red
+        responseMessage.textContent = 'Server error, please try again later.';
+      }
+    });
+  </script>
+</body>
+</html>
